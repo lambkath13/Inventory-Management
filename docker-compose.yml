@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:16
+    container_name: inventory-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 3578Avaz!
+      POSTGRES_DB: inventorydb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: inventory-web
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=inventorydb;Username=postgres;Password=3578Avaz!"
+    ports:
+      - "5278:8080"
+    restart: always
+
+volumes:
+  pgdata:
