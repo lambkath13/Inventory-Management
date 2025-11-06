@@ -1,8 +1,12 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 
-EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+ENV ConnectionStrings__DefaultConnection="Host=host.docker.internal;Port=5432;Database=inventorydb;Username=postgres;Password=3578Avaz!"
+
+EXPOSE 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
