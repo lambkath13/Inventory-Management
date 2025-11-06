@@ -1,0 +1,170 @@
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<InventoryApp.Infrastructure.SharedResource> L
+@model int
+
+@{
+    ViewData["Title"] = L["Details"];
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h5 m-0">@L["Details"]</h1>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" id="btnBack" href="#">@L["Back"]</a>
+        <a class="btn btn-primary" id="btnEdit" href="#">@L["EditItem"]</a>
+        <button class="btn btn-danger" id="btnDelete">@L["Delete"]</button>
+    </div>
+</div>
+
+<div id="card" class="card shadow-sm">
+    <div class="card-body">
+        <div id="load" class="text-muted">@L["Loading"]</div>
+        <dl id="dl" class="row d-none"></dl>
+    </div>
+</div>
+
+@section Scripts{
+<script>
+(function(){
+  const id = @Model;
+  const loadEl = document.getElementById('load');
+  const dl     = document.getElementById('dl');
+  const card   = document.getElementById('card');
+  const btnBack   = document.getElementById('btnBack');
+  const btnEdit   = document.getElementById('btnEdit');
+  const btnDelete = document.getElementById('btnDelete');
+
+  const esc = s => (s ?? '').replace(/[&<>"]/g, m => (
+    {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]
+  ));
+
+  function isOn(state){
+    if (state == null) return false;
+    if (typeof state === 'string'){
+      const v = state.toLowerCase();
+      return v === 'optional' || v === 'required';
+    }
+    return Number(state) > 0;
+  }
+
+  async function load(){
+    try{
+      const rItem = await fetch('/api/items/single/'+id, {credentials:'same-origin'});
+      if(!rItem.ok) throw 0;
+      const it = await rItem.json();
+
+      const invId = it.inventoryId ?? it.inventoryID;
+      if (invId){
+        btnBack.href = '/Items?inventoryId=' + invId;
+        btnEdit.href = '/Items/Edit/' + id + '?inventoryId=' + invId;
+      } else {
+        btnBack.href = '/Inventories';
+        btnEdit.classList.add('d-none');
+      }
+
+      let inv = null;
+      if (invId){
+        try{
+          const rInv = await fetch('/api/inventories/'+invId, {credentials:'same-origin'});
+          if (rInv.ok) inv = await rInv.json();
+        }catch{}
+      }
+
+      const rows = [];
+
+      if (it.customId)
+        rows.push({ label: 'CustomId', value: it.customId });
+
+      function addField(invState, invName, itemValue, fallbackLabel){
+        if (!inv || !isOn(invState)) return;
+        if (itemValue === null || itemValue === undefined || itemValue === '') return;
+        rows.push({
+          label: invName || fallbackLabel,
+          value: String(itemValue)
+        });
+      }
+
+      
+      addField(inv?.customString1State, inv?.customString1Name, it.string1, '@L["String1"]');
+      addField(inv?.customString2State, inv?.customString2Name, it.string2, '@L["String2"]');
+      addField(inv?.customString3State, inv?.customString3Name, it.string3, '@L["String3"]');
+
+      addField(inv?.customInt1State, inv?.customInt1Name, it.int1, 'Int 1');
+      addField(inv?.customInt2State, inv?.customInt2Name, it.int2, 'Int 2');
+      addField(inv?.customInt3State, inv?.customInt3Name, it.int3, 'Int 3');
+
+      function addBool(invState, invName, itemValue, fallbackLabel){
+        if (!inv || !isOn(invState)) return;
+        if (itemValue === null || itemValue === undefined) return;
+        rows.push({
+          label: invName || fallbackLabel,
+          value: itemValue ? '@L["Yes"]' : '@L["No"]'
+        });
+      }
+      addBool(inv?.customBool1State, inv?.customBool1Name, it.bool1, 'Bool 1');
+      addBool(inv?.customBool2State, inv?.customBool2Name, it.bool2, 'Bool 2');
+      addBool(inv?.customBool3State, inv?.customBool3Name, it.bool3, 'Bool 3');
+
+      addField(inv?.customText1State, inv?.customText1Name, it.text1, 'Text 1');
+      addField(inv?.customText2State, inv?.customText2Name, it.text2, 'Text 2');
+      addField(inv?.customText3State, inv?.customText3Name, it.text3, 'Text 3');
+
+      if (inv && isOn(inv.customLink1State) && it.link1){
+        rows.push({
+          label: inv.customLink1Name || 'Link 1',
+          value: `<a href="${esc(it.link1)}" target="_blank" rel="noopener">${esc(it.link1)}</a>`
+        });
+      }
+      if (inv && isOn(inv.customLink2State) && it.link2){
+        rows.push({
+          label: inv.customLink2Name || 'Link 2',
+          value: `<a href="${esc(it.link2)}" target="_blank" rel="noopener">${esc(it.link2)}</a>`
+        });
+      }
+      if (inv && isOn(inv.customLink3State) && it.link3){
+        rows.push({
+          label: inv.customLink3Name || 'Link 3',
+          value: `<a href="${esc(it.link3)}" target="_blank" rel="noopener">${esc(it.link3)}</a>`
+        });
+      }
+
+      if (it.createdAt)
+        rows.push({ label: '@L["Created"]', value: new Date(it.createdAt).toLocaleString() });
+      if (it.updatedAt)
+        rows.push({ label: '@L["Updated"]', value: new Date(it.updatedAt).toLocaleString() });
+
+      if (!rows.length){
+        dl.innerHTML = `<dt class="col-sm-3">@L["Details"]</dt>
+                        <dd class="col-sm-9 text-muted">@L["Empty"]</dd>`;
+      } else {
+        dl.innerHTML = rows.map(r => `
+          <dt class="col-sm-3">${esc(r.label)}</dt>
+          <dd class="col-sm-9">${r.value.startsWith('<a ') ? r.value : esc(r.value)}</dd>
+        `).join('');
+      }
+
+      loadEl.classList.add('d-none');
+      dl.classList.remove('d-none');
+
+      btnDelete?.addEventListener('click', async ()=>{
+        if (!invId) return;
+        if (!confirm('@L["AreYouSureToDelete"]')) return;
+        const resp = await fetch(`/api/items/${id}?inventoryId=${invId}`, {
+          method:'DELETE',
+          credentials:'same-origin'
+        });
+        if (resp.status === 204){
+          location.href = '/Items?inventoryId='+invId;
+        }else{
+          alert('@L["ErrorLoadingData"]');
+        }
+      });
+
+    }catch{
+      card.innerHTML = '<div class="card-body text-danger">@L["ErrorLoadingData"]</div>';
+    }
+  }
+
+  load();
+})();
+</script>
+}

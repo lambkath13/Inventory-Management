@@ -1,0 +1,71 @@
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<InventoryApp.Infrastructure.SharedResource> L
+
+@{
+    ViewData["Title"] = "Items";
+    var invId = Context.Request.Query["inventoryId"].FirstOrDefault();
+}
+
+<div data-page="items-list"></div>
+
+<h1 class="h4 mb-3">@L["Items"]</h1>
+
+<div class="d-flex justify-content-between mb-3">
+    <a class="btn btn-outline-secondary" href="/Inventories/Details/@invId">@L["Back"]</a>
+    <a class="btn btn-primary" href="/Items/Create?inventoryId=@invId">@L["AddNewItem"]</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle" id="tblItems">
+        <thead>
+        <tr>
+            <th>@L["CustomId"]</th>
+            <th>@L["Title"]</th>
+            <th>@L["Created"]</th>
+            <th class="text-end">@L["Actions"]</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr><td colspan="4" class="text-muted">@L["Loading"]</td></tr>
+        </tbody>
+    </table>
+</div>
+
+@section Scripts{
+<script>
+(async function(){
+  const tbody = document.querySelector('#tblItems tbody');
+  const params = new URLSearchParams(location.search);
+  const inventoryId = Number(params.get('inventoryId') || 0);
+  if(!inventoryId){ tbody.innerHTML = '<tr><td colspan="4" class="text-danger">InventoryId is missing</td></tr>'; return; }
+
+  const esc = s => (s??'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+
+  try{
+    const r = await fetch(`/api/items/${inventoryId}?page=1&pageSize=200`, {credentials:'same-origin'});
+    if(!r.ok) throw 0;
+    const data = await r.json();
+    const items = data.items || [];
+    if(!items.length){
+      tbody.innerHTML = '<tr><td colspan="4" class="text-muted">@L["Empty"]</td></tr>';
+      return;
+    }
+    tbody.innerHTML = items.map(x => {
+      const title = x.string1 ?? x.text1 ?? '';
+      const created = x.createdAt ? new Date(x.createdAt).toLocaleString() : '';
+      return `
+        <tr>
+          <td>${esc(x.customId ?? '')}</td>
+          <td>${esc(title)}</td>
+          <td>${esc(created)}</td>
+          <td class="text-end">
+            <a class="btn btn-sm btn-outline-primary" href="/Items/Edit/${x.id}?inventoryId=${inventoryId}">@L["Edit"]</a>
+          </td>
+        </tr>`;
+    }).join('');
+  }catch{
+    tbody.innerHTML = '<tr><td colspan="4" class="text-danger">@L["ErrorLoadingData"]</td></tr>';
+  }
+})();
+</script>
+}

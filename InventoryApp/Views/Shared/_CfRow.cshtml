@@ -1,0 +1,21 @@
+@model (string Prefix, string Label)
+<div class="border rounded p-3 mb-3">
+  <h6 class="fw-bold mb-3">@Model.Label</h6>
+
+  @for (int i = 1; i <= 3; i++)
+  {
+    var name = $"{Model.Prefix}{i}";
+    <div class="row mb-2">
+      <div class="col-md-6">
+        <input name="@($"{name}Name")" class="form-control" placeholder="@($"Name {i}")" />
+      </div>
+      <div class="col-md-6">
+        <select name="@($"{name}State")" class="form-select">
+          <option value="0">Hidden</option>
+          <option value="1">Optional</option>
+          <option value="2">Required</option>
+        </select>
+      </div>
+    </div>
+  }
+</div>

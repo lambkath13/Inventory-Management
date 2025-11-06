@@ -1,0 +1,217 @@
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<InventoryApp.Infrastructure.SharedResource> L
+@model int
+
+@{
+    ViewData["Title"] = "Edit item";
+    var invId = Context.Request.Query["inventoryId"].FirstOrDefault();
+}
+
+<h1 class="h4 mb-3">@L["EditItem"]</h1>
+
+<form id="form" class="d-none">
+  <div class="mb-3">
+    <label class="form-label">CustomId</label>
+    <input class="form-control" name="customId" />
+  </div>
+
+  <div id="fields"></div>
+
+  <div class="d-flex gap-2 mt-3">
+    <button class="btn btn-primary" type="submit">@L["Save"]</button>
+    <a class="btn btn-outline-secondary" href="/Items?inventoryId=@invId">@L["Back"]</a>
+  </div>
+</form>
+
+<div id="loading" class="text-muted">@L["Loading"]</div>
+
+@section Scripts{
+<script>
+(async function(){
+  const id = @Model;
+  const params = new URLSearchParams(location.search);
+  const inventoryId = Number(params.get('inventoryId') || 0);
+
+  const form    = document.getElementById('form');
+  const loading = document.getElementById('loading');
+  const fields  = document.getElementById('fields');
+
+  if (!inventoryId) {
+    loading.textContent = 'InventoryId is missing';
+    return;
+  }
+
+  const esc = s => (s ?? '').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+
+  function isOn(state) {
+    if (state == null) return false;
+    if (typeof state === 'string') {
+      const v = state.toLowerCase();
+      return v === 'optional' || v === 'required';
+    }
+    return Number(state) > 0;
+  }
+  function isRequired(state) {
+    if (state == null) return false;
+    if (typeof state === 'string') {
+      return state.toLowerCase() === 'required';
+    }
+    return Number(state) === 2;
+  }
+
+  const activeFields = [];
+
+  function addField(opts) {
+    const { name, label, kind, required } = opts; 
+    activeFields.push({ name, kind });
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'mb-3';
+
+    const reqAttr = required ? 'required' : '';
+
+    if (kind === 'bool') {
+      wrapper.innerHTML = `
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="f_${name}"
+                 data-field="${name}" data-kind="${kind}">
+          <label class="form-check-label" for="f_${name}">${esc(label)}</label>
+        </div>`;
+    } else if (kind === 'text') {
+      wrapper.innerHTML = `
+        <label class="form-label" for="f_${name}">${esc(label)}</label>
+        <textarea class="form-control" id="f_${name}"
+                  data-field="${name}" data-kind="${kind}" rows="3" ${reqAttr}></textarea>`;
+    } else {
+      const type = (kind === 'int') ? 'number' : (kind === 'link' ? 'url' : 'text');
+      wrapper.innerHTML = `
+        <label class="form-label" for="f_${name}">${esc(label)}</label>
+        <input class="form-control" id="f_${name}" type="${type}"
+               data-field="${name}" data-kind="${kind}" ${reqAttr} />`;
+    }
+
+    fields.appendChild(wrapper);
+  }
+
+  function fillItemValues(item) {
+    form.customId.value = item.customId ?? '';
+
+    for (const f of activeFields) {
+      const el = document.querySelector(`[data-field="${f.name}"]`);
+      if (!el) continue;
+
+      const v = item[f.name]; 
+
+      if (f.kind === 'bool') {
+        el.checked = !!v;
+      } else if (f.kind === 'int') {
+        el.value = (v !== null && v !== undefined) ? v : '';
+      } else {
+        el.value = v ?? '';
+      }
+    }
+  }
+
+  async function loadInventoryAndItem() {
+    try {
+      const invResp = await fetch('/api/inventories/' + inventoryId, { credentials: 'same-origin' });
+      if (!invResp.ok) throw 0;
+      const inv = await invResp.json();
+
+      if (isOn(inv.customString1State))
+        addField({ name: 'string1', label: inv.customString1Name || '@L["Title"]', kind: 'string', required: isRequired(inv.customString1State) });
+      if (isOn(inv.customString2State))
+        addField({ name: 'string2', label: inv.customString2Name || 'String 2', kind: 'string', required: isRequired(inv.customString2State) });
+      if (isOn(inv.customString3State))
+        addField({ name: 'string3', label: inv.customString3Name || 'String 3', kind: 'string', required: isRequired(inv.customString3State) });
+
+      if (isOn(inv.customInt1State))
+        addField({ name: 'int1', label: inv.customInt1Name || 'Int 1', kind: 'int', required: isRequired(inv.customInt1State) });
+      if (isOn(inv.customInt2State))
+        addField({ name: 'int2', label: inv.customInt2Name || 'Int 2', kind: 'int', required: isRequired(inv.customInt2State) });
+      if (isOn(inv.customInt3State))
+        addField({ name: 'int3', label: inv.customInt3Name || 'Int 3', kind: 'int', required: isRequired(inv.customInt3State) });
+
+      if (isOn(inv.customBool1State))
+        addField({ name: 'bool1', label: inv.customBool1Name || 'Bool 1', kind: 'bool', required: isRequired(inv.customBool1State) });
+      if (isOn(inv.customBool2State))
+        addField({ name: 'bool2', label: inv.customBool2Name || 'Bool 2', kind: 'bool', required: isRequired(inv.customBool2State) });
+      if (isOn(inv.customBool3State))
+        addField({ name: 'bool3', label: inv.customBool3Name || 'Bool 3', kind: 'bool', required: isRequired(inv.customBool3State) });
+
+      if (isOn(inv.customText1State))
+        addField({ name: 'text1', label: inv.customText1Name || 'Text 1', kind: 'text', required: isRequired(inv.customText1State) });
+      if (isOn(inv.customText2State))
+        addField({ name: 'text2', label: inv.customText2Name || 'Text 2', kind: 'text', required: isRequired(inv.customText2State) });
+      if (isOn(inv.customText3State))
+        addField({ name: 'text3', label: inv.customText3Name || 'Text 3', kind: 'text', required: isRequired(inv.customText3State) });
+
+      if (isOn(inv.customLink1State))
+        addField({ name: 'link1', label: inv.customLink1Name || 'Link 1', kind: 'link', required: isRequired(inv.customLink1State) });
+      if (isOn(inv.customLink2State))
+        addField({ name: 'link2', label: inv.customLink2Name || 'Link 2', kind: 'link', required: isRequired(inv.customLink2State) });
+      if (isOn(inv.customLink3State))
+        addField({ name: 'link3', label: inv.customLink3Name || 'Link 3', kind: 'link', required: isRequired(inv.customLink3State) });
+
+      const itemResp = await fetch('/api/items/single/' + id, { credentials: 'same-origin' });
+      if (!itemResp.ok) throw 0;
+      const item = await itemResp.json();
+
+      fillItemValues(item);
+
+      loading.classList.add('d-none');
+      form.classList.remove('d-none');
+    } catch {
+      loading.textContent = '@L["ErrorLoadingData"]';
+    }
+  }
+
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+
+    const body = {
+      customId: form.customId.value?.trim() || null
+    };
+
+    for (const f of activeFields) {
+      const el = document.querySelector(`[data-field="${f.name}"]`);
+      if (!el) continue;
+
+      let val = null;
+      if (f.kind === 'bool') {
+        val = el.checked;
+      } else if (f.kind === 'int') {
+        val = el.value ? Number(el.value) : null;
+      } else {
+        val = el.value?.trim() || null;
+      }
+
+      body[f.name] = val;
+    }
+
+    const r = await fetch(`/api/items/${id}?inventoryId=${inventoryId}`, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json'},
+      credentials:'same-origin',
+      body: JSON.stringify(body)
+    });
+
+    if(r.ok){
+      location.href = '/Items?inventoryId='+inventoryId;
+    }else if(r.status === 400){
+      const data = await r.json().catch(()=>null);
+      alert(data?.error || 'Validation error');
+    }else if(r.status === 403){
+      alert('Forbidden');
+    }else if(r.status === 409){
+      const data = await r.json().catch(()=>null);
+      alert(data?.error || 'Duplicate CustomId');
+    }else{
+      alert('@L["ErrorLoadingData"]');
+    }
+  });
+
+  await loadInventoryAndItem();
+})();
+</script>
+}

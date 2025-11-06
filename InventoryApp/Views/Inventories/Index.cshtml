@@ -1,0 +1,48 @@
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<InventoryApp.Infrastructure.SharedResource> L
+@model IEnumerable<InventoryApp.Models.InventoryEntity>
+
+@{
+    ViewData["Title"] = L["Inventories"];
+    var isAuth = Context.User?.Identity?.IsAuthenticated ?? false;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">@L["Inventories"]</h1>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="/search">@L["Search"]</a>
+    @if (isAuth)
+    {
+      <a class="btn btn-primary" href="/Inventories/Create">@L["Create"]</a>
+    }
+  </div>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th>@L["Title"]</th>
+        <th>@L["Description"]</th>
+        <th class="text-nowrap">@L["Created"]</th>
+      </tr>
+    </thead>
+    <tbody>
+    @if (!Model.Any())
+    {
+        <tr><td colspan="3" class="text-muted">@L["Empty"]</td></tr>
+    }
+    else
+    {
+        @foreach (var x in Model)
+        {
+            <tr onclick="location.href='/Inventories/Details/@x.Id'" style="cursor:pointer">
+              <td class="fw-semibold">@x.Title</td>
+              <td class="text-truncate" style="max-width:360px;">@x.DescriptionMarkdown</td>
+              <td class="text-nowrap">@x.CreatedAt.ToLocalTime().ToString("g")</td>
+            </tr>
+        }
+    }
+    </tbody>
+  </table>
+</div>

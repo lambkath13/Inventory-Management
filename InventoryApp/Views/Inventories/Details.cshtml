@@ -1,0 +1,85 @@
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<InventoryApp.Infrastructure.SharedResource> L
+@model int
+@{
+  ViewData["Title"] = L["Details"];
+  var isAuth = Context.User?.Identity?.IsAuthenticated ?? false;
+}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h5 m-0">@L["Details"]</h1>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="/Inventories">@L["Back"]</a>
+    <a class="btn btn-outline-primary" href="/Items?inventoryId=@Model">@L["Items"]</a>
+    @if (isAuth)
+    {
+      <a class="btn btn-primary" href="/Inventories/Edit/@Model">@L["Edit"]</a>
+      <button class="btn btn-danger" id="btnDelete">@L["Delete"]</button>
+    }
+  </div>
+</div>
+
+<div id="card" class="card shadow-sm">
+  <div class="card-body">
+    <div id="load" class="text-muted">@L["Loading"]</div>
+    <dl id="dl" class="row d-none">
+      <dt class="col-sm-3">@L["Title"]</dt><dd class="col-sm-9" id="fTitle"></dd>
+      <dt class="col-sm-3">@L["Description"]</dt><dd class="col-sm-9" id="fDesc"></dd>
+      <dt class="col-sm-3">@L["Category"]</dt><dd class="col-sm-9" id="fCat"></dd>
+      <dt class="col-sm-3">@L["Public"]</dt><dd class="col-sm-9" id="fPub"></dd>
+      <dt class="col-sm-3">@L["Created"]</dt><dd class="col-sm-9" id="fCreated"></dd>
+
+      <dt class="col-sm-3">Tags</dt>
+      <dd class="col-sm-9">
+        <div id="tagList"></div>
+      </dd>
+    </dl>
+  </div>
+</div>
+
+@section Scripts{
+<script>
+(async function(){
+  const id = @Model;
+  const esc = s => (s??"").replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+
+  async function loadTags(){
+    try {
+      const r = await fetch(`/api/inventories/${id}/tags`, {credentials:'same-origin'});
+      if(!r.ok){ tagList.innerHTML = '<span class="text-muted">@L["Empty"]</span>'; return; }
+      const tags = await r.json();
+      if(!Array.isArray(tags) || !tags.length){
+        tagList.innerHTML = '<span class="text-muted">@L["Empty"]</span>'; return;
+      }
+      tagList.innerHTML = tags.map(t => `
+        <span class="badge text-bg-secondary me-1">${esc(t.name ?? t.Name ?? '')}</span>
+      `).join('');
+    } catch {
+      tagList.innerHTML = '<span class="text-muted">@L["Empty"]</span>';
+    }
+  }
+
+  try{
+    const r = await fetch('/api/inventories/'+id, {credentials:'same-origin'});
+    if(!r.ok) throw 0;
+    const x = await r.json();
+    fTitle.innerHTML   = esc(x.title);
+    fDesc.innerHTML    = esc(x.descriptionMarkdown ?? '');
+    fCat.innerHTML     = esc(x.category ?? '');
+    fPub.innerHTML     = x.isPublic ? '@L["Yes"]' : '@L["No"]';
+    fCreated.innerHTML = new Date(x.createdAt).toLocaleString();
+    await loadTags();
+    load.classList.add('d-none');
+    dl.classList.remove('d-none');
+  }catch{
+    card.innerHTML = '<div class="card-body text-danger">@L["ErrorLoadingData"]</div>';
+  }
+
+  btnDelete?.addEventListener('click', async ()=>{
+    if(!confirm('@L["AreYouSureToDelete"]')) return;
+    const r = await fetch('/api/inventories/'+id, {method:'DELETE', credentials:'same-origin'});
+    if(r.status === 204) location.href='/Inventories';
+    else alert('@L["ErrorLoadingData"]');
+  });
+})();
+</script>
+}

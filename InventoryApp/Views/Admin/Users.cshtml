@@ -1,0 +1,136 @@
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<InventoryApp.Infrastructure.SharedResource> L
+
+@{
+    ViewData["Title"] = "Admin – Users";
+}
+
+<h1 class="h4 mb-3">Users (Admin)</h1>
+
+<div class="mb-3">
+    <form id="formSearch" class="input-group">
+        <input type="text" class="form-control" name="q" placeholder="Search by email or name" />
+        <button class="btn btn-outline-secondary" type="submit">Search</button>
+    </form>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle" id="tblUsers">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Display name</th>
+                <th>Created</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td colspan="5" class="text-muted">Loading...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+<script>
+(function(){
+    const tblBody = document.querySelector('#tblUsers tbody');
+    const formSearch = document.getElementById('formSearch');
+
+    const esc = s => (s ?? '').replace(/[&<>"]/g, m => (
+      { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m]
+    ));
+
+    let currentQ = '';
+    let page = 1;
+    const pageSize = 50;
+
+    async function load(){
+        tblBody.innerHTML = '<tr><td colspan="5" class="text-muted">Loading...</td></tr>';
+        try{
+            const url = `/api/admin/users?page=${page}&pageSize=${pageSize}&sortBy=createdAt&sortDir=desc`
+                       + (currentQ ? `&q=${encodeURIComponent(currentQ)}` : '');
+            const r = await fetch(url, { credentials:'same-origin' });
+            if (!r.ok) throw 0;
+            const data = await r.json();
+
+            if (!data.items?.length){
+                tblBody.innerHTML = '<tr><td colspan="5" class="text-muted">No users found</td></tr>';
+                return;
+            }
+
+            tblBody.innerHTML = data.items.map(u => `
+                <tr data-id="${esc(u.id)}">
+                    <td>${esc(u.email ?? '')}</td>
+                    <td>${esc(u.displayName ?? '')}</td>
+                    <td class="text-nowrap">${u.createdAt ? new Date(u.createdAt).toLocaleString() : ''}</td>
+                    <td>
+                        ${u.isBlocked ? '<span class="badge bg-danger">Blocked</span>' 
+                                      : '<span class="badge bg-success">Active</span>'}
+                    </td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-warning me-1" data-act="block">
+                            ${u.isBlocked ? 'Unblock' : 'Block'}
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-primary me-1" data-act="make-admin">
+                            Make admin
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-act="remove-admin">
+                            Remove admin
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch {
+            tblBody.innerHTML = '<tr><td colspan="5" class="text-danger">Error loading users</td></tr>';
+        }
+    }
+
+    formSearch.addEventListener('submit', e => {
+        e.preventDefault();
+        currentQ = formSearch.q.value.trim();
+        page = 1;
+        load();
+    });
+
+    tblBody.addEventListener('click', async e => {
+        const btn = e.target.closest('button[data-act]');
+        if (!btn) return;
+        const tr = btn.closest('tr[data-id]');
+        if (!tr) return;
+        const id = tr.getAttribute('data-id');
+        const act = btn.getAttribute('data-act');
+
+        try{
+            let url = '';
+            if (act === 'block'){
+                if (btn.textContent.trim().toLowerCase().startsWith('unblock'))
+                    url = `/api/admin/users/${id}/unblock`;
+                else
+                    url = `/api/admin/users/${id}/block`;
+            } else if (act === 'make-admin'){
+                url = `/api/admin/users/${id}/make-admin`;
+            } else if (act === 'remove-admin'){
+                url = `/api/admin/users/${id}/remove-admin`;
+            }
+            if (!url) return;
+
+            const r = await fetch(url, {
+                method: 'POST',
+                credentials: 'same-origin'
+            });
+            if (!r.ok){
+                const text = await r.text();
+                alert('Operation failed: ' + text);
+            } else {
+                await load();
+            }
+        } catch {
+            alert('Operation failed');
+        }
+    });
+
+    load();
+})();
+</script>
+}

@@ -1,0 +1,60 @@
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<InventoryApp.Infrastructure.SharedResource> L
+@{
+    ViewData["Title"] = L["Search"];
+}
+<div data-page="search"></div>
+
+<h1 class="h4 mb-3">@L["SearchResults"]</h1>
+
+<form id="formSearch" class="input-group mb-4" method="get" action="/search">
+  <input type="text" class="form-control" name="q" placeholder="@L["Enter query"]" />
+  <button class="btn btn-primary" type="submit">@L["Search"]</button>
+</form>
+
+<div id="invLoading" class="text-muted d-none">@L["Loading"]</div>
+<div id="invError"   class="text-danger d-none">@L["ErrorLoadingData"]</div>
+<div id="invEmpty"   class="text-muted d-none">@L["NoResults"]</div>
+
+<div class="table-responsive mb-4">
+  <table class="table table-hover align-middle" id="tblInv">
+    <thead>
+      <tr>
+        <th>@L["Title"]</th>
+        <th>@L["Description"]</th>
+        <th class="text-nowrap">@L["Created"]</th>
+        <th style="width:1%"></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<h2 class="h5">@L["Items"]</h2>
+<div id="itLoading" class="text-muted d-none">@L["Loading"]</div>
+<div id="itError"   class="text-danger d-none">@L["ErrorLoadingData"]</div>
+<div id="itEmpty"   class="text-muted d-none">@L["NoResults"]</div>
+
+<div class="table-responsive">
+  <table class="table table-hover align-middle" id="tblItems">
+    <thead>
+      <tr>
+        <th>@L["CustomId"]</th>
+        <th>@L["Text"]</th>
+        <th class="text-nowrap">@L["Updated"]</th>
+        <th style="width:1%"></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+@section Scripts{
+<script>
+  (function(){
+     const p = new URLSearchParams(location.search);
+     const q = (p.get('q') || '').trim();
+     if (q) document.querySelector('#formSearch [name="q"]').value = q;
+  })();
+</script>
+}
