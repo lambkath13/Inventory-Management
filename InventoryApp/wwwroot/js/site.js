@@ -56,16 +56,6 @@ function getQueryParam(name) {
 document.getElementById('global-search')?.addEventListener('submit',(e)=>{
 });
 
-document.querySelector('form[action="/auth/logout"]')?.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
-  await fetch('/auth/logout', {
-    method: 'POST',
-    headers: { 'RequestVerificationToken': token }
-  });
-  location.href = '/auth/login';
-});
-
 async function initHome(){
   const elLatest = document.querySelector('#tblLatest tbody');
   const tblLatest = document.getElementById('tblLatest');

@@ -84,7 +84,7 @@ public class AuthController : Controller
     public async Task<IActionResult> Logout()
     {
         await _accounts.LogoutAsync();
-        return RedirectToAction(nameof(Login), new { returnUrl = "/" });
+        return Redirect("/");
     }
 
     [Authorize]

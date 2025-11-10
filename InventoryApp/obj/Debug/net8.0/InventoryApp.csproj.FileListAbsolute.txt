@@ -253,3 +253,4 @@ C:\Users\user\Desktop\CourseProj\InventoryApp\obj\Debug\net8.0\refint\InventoryA
 C:\Users\user\Desktop\CourseProj\InventoryApp\obj\Debug\net8.0\InventoryApp.pdb
 C:\Users\user\Desktop\CourseProj\InventoryApp\obj\Debug\net8.0\InventoryApp.genruntimeconfig.cache
 C:\Users\user\Desktop\CourseProj\InventoryApp\obj\Debug\net8.0\ref\InventoryApp.dll
+C:\Users\user\Desktop\CourseProj\InventoryApp\obj\Debug\net8.0\InventoryApp.sourcelink.json

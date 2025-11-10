@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryApp.Controllers;
 
-[Authorize]
+[AllowAnonymous]
 public class SearchController : Controller
 {
     [HttpGet("/search")]

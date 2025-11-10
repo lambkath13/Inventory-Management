@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 
 namespace InventoryApp.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("api/inventories")]
 public class InventoriesApiController : ControllerBase
@@ -27,6 +26,7 @@ public class InventoriesApiController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAll(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
@@ -49,6 +49,7 @@ public class InventoriesApiController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetById(int id, CancellationToken ct)
     {
         var inv = await _service.GetByIdAsync(id, ct);
@@ -56,6 +57,7 @@ public class InventoriesApiController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> Create([FromBody] InventoryCreateDto dto, CancellationToken ct)
     {
         var userId = _um.GetUserId(User);
@@ -120,9 +122,10 @@ public class InventoriesApiController : ControllerBase
         }
 
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
-    }    
+    }
 
     [HttpPut("{id:int}")]
+    [Authorize]
     public async Task<IActionResult> Update(int id, [FromBody] InventoryCreateDto dto, CancellationToken ct)
     {
         var can = await _auth.AuthorizeAsync(User, id, "CanWriteInventory");
@@ -183,6 +186,7 @@ public class InventoriesApiController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
         var can = await _auth.AuthorizeAsync(User, id, "CanWriteInventory");

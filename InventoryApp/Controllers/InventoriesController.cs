@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryApp.Controllers;
 
-[Authorize]
+[AllowAnonymous]
 public class InventoriesController : Controller
 {
     private readonly IInventoryService _service;

@@ -24,7 +24,7 @@ public class ItemsController : ControllerBase
         _um = um;
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet("{inventoryId:int}")]
     public async Task<IActionResult> GetAll(
         int inventoryId,

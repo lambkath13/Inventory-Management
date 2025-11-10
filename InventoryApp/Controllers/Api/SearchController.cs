@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InventoryApp.Controllers.Api;
 
-[Authorize]
 [ApiController]
 [Route("api/search")]
 public class SearchApiController : ControllerBase
@@ -21,6 +20,7 @@ public class SearchApiController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> Search([FromQuery] string q, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(q))
@@ -31,6 +31,7 @@ public class SearchApiController : ControllerBase
     }
 
     [HttpGet("by-tag")]
+    [AllowAnonymous]
     public async Task<IActionResult> ByTag(
         [FromQuery] string tag,
         [FromQuery] int page = 1,

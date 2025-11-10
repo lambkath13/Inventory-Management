@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using InventoryApp.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InventoryApp.Controllers.Api
 {
+    [AllowAnonymous]
     [Route("api/home")]
     [ApiController]
     public class HomeController : ControllerBase
