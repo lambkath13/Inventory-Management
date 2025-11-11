@@ -33,7 +33,15 @@
     return;
   }
 
-  const esc = s => (s ?? '').replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+  const esc = s => (s ?? '').replace(/[&<>"]/g, m => (
+    {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]
+  ));
+
+  function decodeHtmlEntities(str) {
+    const tmp = document.createElement('textarea');
+    tmp.innerHTML = str ?? '';
+    return tmp.value;
+  }
 
   function isOn(state) {
     if (state == null) return false;
@@ -54,29 +62,33 @@
   const activeFields = [];
 
   function addField(opts) {
-    const { name, label, kind, required } = opts; 
+    const { name, label, kind, required } = opts;
     activeFields.push({ name, kind });
 
     const wrapper = document.createElement('div');
     wrapper.className = 'mb-3';
 
     const reqAttr = required ? 'required' : '';
+    const safeLabel = esc(decodeHtmlEntities(label));
 
     if (kind === 'bool') {
       wrapper.innerHTML = `
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="f_${name}" data-field="${name}" data-kind="${kind}">
-          <label class="form-check-label" for="f_${name}">${esc(label)}</label>
+          <input class="form-check-input" type="checkbox"
+                 id="f_${name}" data-field="${name}" data-kind="${kind}">
+          <label class="form-check-label" for="f_${name}">${safeLabel}</label>
         </div>`;
     } else if (kind === 'text') {
       wrapper.innerHTML = `
-        <label class="form-label" for="f_${name}">${esc(label)}</label>
-        <textarea class="form-control" id="f_${name}" data-field="${name}" data-kind="${kind}" rows="3" ${reqAttr}></textarea>`;
+        <label class="form-label" for="f_${name}">${safeLabel}</label>
+        <textarea class="form-control" id="f_${name}"
+                  data-field="${name}" data-kind="${kind}" rows="3" ${reqAttr}></textarea>`;
     } else {
       const type = (kind === 'int') ? 'number' : (kind === 'link' ? 'url' : 'text');
       wrapper.innerHTML = `
-        <label class="form-label" for="f_${name}">${esc(label)}</label>
-        <input class="form-control" id="f_${name}" type="${type}" data-field="${name}" data-kind="${kind}" ${reqAttr} />`;
+        <label class="form-label" for="f_${name}">${safeLabel}</label>
+        <input class="form-control" id="f_${name}" type="${type}"
+               data-field="${name}" data-kind="${kind}" ${reqAttr} />`;
     }
 
     fields.appendChild(wrapper);
@@ -193,6 +205,7 @@
           kind: 'link',
           required: isRequired(inv.customLink3State)
         });
+
       if (!activeFields.length) {
         addField({
           name: 'string1',
@@ -202,7 +215,7 @@
         });
         addField({
           name: 'text1',
-          label: 'Text',
+          label: '@L["Text"]',
           kind: 'text',
           required: false
         });

@@ -48,7 +48,6 @@
 
   <data name="Category" xml:space="preserve"><value>Категория</value></data>
   <data name="Public" xml:space="preserve"><value>Публичный</value></data>
-  <data name="ImageUrl" xml:space="preserve"><value>Ссылка на изображение</value></data>
 
   <data name="Search" xml:space="preserve"><value>Поиск</value></data>
   <data name="SearchResults" xml:space="preserve"><value>Результаты поиска</value></data>
@@ -62,6 +61,25 @@
   <data name="AddNewItem" xml:space="preserve"><value>Добавить</value></data>
   <data name="Items" xml:space="preserve"><value>Предметы</value></data>
   <data name="Actions" xml:space="preserve"><value>Действия</value></data>
-
+  <data name="Text" xml:space="preserve"><value>Текст</value></data>
+  <data name="Updated" xml:space="preserve"><value>Обновленные</value></data>
+  <data name="NoResults" xml:space="preserve"><value>Нет Результатов</value></data>
+  <data name="Enter query" xml:space="preserve"><value>Введите запрос</value></data>
+  <data name="AdminUsers" xml:space="preserve"><value>Администрирование – Пользователи</value></data>
+  <data name="UsersAdmin" xml:space="preserve"><value>Пользователи (админ)</value></data>
+  <data name="SearchByEmailOrName" xml:space="preserve"><value>Поиск по email или имени</value></data>
+  <data name="Created" xml:space="preserve"><value>Создан</value></data>
+  <data name="Status" xml:space="preserve"><value>Статус</value></data>
+  <data name="Actions" xml:space="preserve"><value>Действия</value></data>
+  <data name="Loading" xml:space="preserve"><value>Загрузка...</value></data>
+  <data name="NoUsersFound" xml:space="preserve"><value>Пользователи не найдены</value></data>
+  <data name="Blocked" xml:space="preserve"><value>Заблокирован</value></data>
+  <data name="Active" xml:space="preserve"><value>Активен</value></data>
+  <data name="Unblock" xml:space="preserve"><value>Разблокировать</value></data>
+  <data name="Block" xml:space="preserve"><value>Заблокировать</value></data>
+  <data name="MakeAdmin" xml:space="preserve"><value>Сделать администратором</value></data>
+  <data name="RemoveAdmin" xml:space="preserve"><value>Убрать из администраторов</value></data>
+  <data name="ErrorLoadingUsers" xml:space="preserve"><value>Ошибка при загрузке пользователей</value></data>
+  <data name="OperationFailed" xml:space="preserve"><value>Операция не выполнена</value></data>
 
 </root>

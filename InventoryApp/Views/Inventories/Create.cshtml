@@ -1,8 +1,16 @@
 @using Microsoft.Extensions.Localization
 @inject IStringLocalizer<InventoryApp.Infrastructure.SharedResource> L
+
 @{
   ViewData["Title"] = L["Create"];
+
+  var stringCount = 3;
+  var intCount    = 3;
+  var boolCount   = 3;
+  var textCount   = 3;
+  var linkCount   = 3;
 }
+
 <h1 class="h4 mb-3">@L["Create"]</h1>
 
 <form id="form">
@@ -10,10 +18,12 @@
     <label class="form-label">@L["Title"]</label>
     <input class="form-control" name="title" required maxlength="200" />
   </div>
+
   <div class="mb-3">
     <label class="form-label">@L["Description"]</label>
     <textarea class="form-control" name="descriptionMarkdown" rows="4" maxlength="4000"></textarea>
   </div>
+
   <div class="mb-3">
     <label class="form-label">@L["Category"]</label>
     <input class="form-control" name="category" maxlength="100" />
@@ -21,7 +31,7 @@
 
   <div class="mb-3">
     <label class="form-label">@L["Tags"]</label>
-    <input class="form-control" name="tags"/>
+    <input class="form-control" name="tags" />
     <div class="form-text">@L["Example"] : laptop, asus, 2024</div>
   </div>
 
@@ -30,198 +40,88 @@
     <label class="form-check-label" for="fPublic">@L["Public"]</label>
   </div>
 
-  <hr class="my-4"/>
+  <hr class="my-4" />
   <h2 class="h5 mb-3">@L["CustomFields"]</h2>
 
+  <!-- STRING -->
   <h3 class="h6">@L["StringFields"]</h3>
-  <div class="row g-2 mb-2">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customString1State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
+  @for (var i = 1; i <= stringCount; i++)
+  {
+    <div class="row g-2 mb-2">
+      <div class="col-4 col-md-2">
+        @await Html.PartialAsync("_FieldStateSelect", $"customString{i}State")
+      </div>
+      <div class="col">
+        <input class="form-control"
+               name="customString@iName"
+               placeholder="FieldName" />
+      </div>
     </div>
-    <div class="col">
-      <input class="form-control" name="customString1Name" placeholder="FieldName" />
-    </div>
-  </div>
-  <div class="row g-2 mb-2">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customString2State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
-    </div>
-    <div class="col">
-      <input class="form-control" name="customString2Name" placeholder="FieldName" />
-    </div>
-  </div>
-  <div class="row g-2 mb-3">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customString3State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
-    </div>
-    <div class="col">
-      <input class="form-control" name="customString3Name" placeholder="FieldName" />
-    </div>
-  </div>
+  }
 
+  <!-- INT -->
   <h3 class="h6">@L["NumberFields"]</h3>
-  <div class="row g-2 mb-2">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customInt1State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
+  @for (var i = 1; i <= intCount; i++)
+  {
+    <div class="row g-2 mb-2">
+      <div class="col-4 col-md-2">
+        @await Html.PartialAsync("_FieldStateSelect", $"customInt{i}State")
+      </div>
+      <div class="col">
+        <input class="form-control"
+               name="customInt@iName"
+               placeholder="FieldName" />
+      </div>
     </div>
-    <div class="col">
-      <input class="form-control" name="customInt1Name" placeholder="FieldName" />
-    </div>
-  </div>
-  <div class="row g-2 mb-2">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customInt2State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
-    </div>
-    <div class="col">
-      <input class="form-control" name="customInt2Name" placeholder="FieldName" />
-    </div>
-  </div>
-  <div class="row g-2 mb-3">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customInt3State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
-    </div>
-    <div class="col">
-      <input class="form-control" name="customInt3Name" placeholder="FieldName" />
-    </div>
-  </div>
+  }
 
+  <!-- BOOL -->
   <h3 class="h6">@L["BoolFields"]</h3>
-  <div class="row g-2 mb-2">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customBool1State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
+  @for (var i = 1; i <= boolCount; i++)
+  {
+    <div class="row g-2 mb-2">
+      <div class="col-4 col-md-2">
+        @await Html.PartialAsync("_FieldStateSelect", $"customBool{i}State")
+      </div>
+      <div class="col">
+        <input class="form-control"
+               name="customBool@iName"
+               placeholder="FieldName" />
+      </div>
     </div>
-    <div class="col">
-      <input class="form-control" name="customBool1Name" placeholder="FieldName" />
-    </div>
-  </div>
-  <div class="row g-2 mb-2">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customBool2State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
-    </div>
-    <div class="col">
-      <input class="form-control" name="customBool2Name" placeholder="FieldName" />
-    </div>
-  </div>
-  <div class="row g-2 mb-3">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customBool3State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
-    </div>
-    <div class="col">
-      <input class="form-control" name="customBool3Name" placeholder="FieldName" />
-    </div>
-  </div>
+  }
 
+  <!-- TEXT -->
   <h3 class="h6">@L["TextFields"]</h3>
-  <div class="row g-2 mb-2">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customText1State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
+  @for (var i = 1; i <= textCount; i++)
+  {
+    <div class="row g-2 mb-2">
+      <div class="col-4 col-md-2">
+        @await Html.PartialAsync("_FieldStateSelect", $"customText{i}State")
+      </div>
+      <div class="col">
+        <input class="form-control"
+               name="customText@iName"
+               placeholder="FieldName" />
+      </div>
     </div>
-    <div class="col">
-      <input class="form-control" name="customText1Name" placeholder="FieldName" />
-    </div>
-  </div>
-  <div class="row g-2 mb-2">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customText2State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
-    </div>
-    <div class="col">
-      <input class="form-control" name="customText2Name" placeholder="FieldName" />
-    </div>
-  </div>
-  <div class="row g-2 mb-3">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customText3State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
-    </div>
-    <div class="col">
-      <input class="form-control" name="customText3Name" placeholder="FieldName" />
-    </div>
-  </div>
+  }
 
+  <!-- LINK -->
   <h3 class="h6">@L["LinkFields"]</h3>
-  <div class="row g-2 mb-2">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customLink1State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
+  @for (var i = 1; i <= linkCount; i++)
+  {
+    <div class="row g-2 mb-2">
+      <div class="col-4 col-md-2">
+        @await Html.PartialAsync("_FieldStateSelect", $"customLink{i}State")
+      </div>
+      <div class="col">
+        <input class="form-control"
+               name="customLink@iName"
+               placeholder="FieldName" />
+      </div>
     </div>
-    <div class="col">
-      <input class="form-control" name="customLink1Name" placeholder="FieldName" />
-    </div>
-  </div>
-  <div class="row g-2 mb-2">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customLink2State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
-    </div>
-    <div class="col">
-      <input class="form-control" name="customLink2Name" placeholder="FieldName" />
-    </div>
-  </div>
-  <div class="row g-2 mb-3">
-    <div class="col-4 col-md-2">
-      <select class="form-select" name="customLink3State">
-        <option value="0" selected>Hidden</option>
-        <option value="1">Optional</option>
-        <option value="2">Required</option>
-      </select>
-    </div>
-    <div class="col">
-      <input class="form-control" name="customLink3Name" placeholder="FieldName" />
-    </div>
-  </div>
+  }
 
   <div class="form-text mb-3">@L["CustomFieldsHelp"]</div>
 
@@ -233,7 +133,7 @@
 
 @section Scripts{
 <script>
-document.getElementById('form').addEventListener('submit', async (e)=>{
+document.getElementById('form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const f = e.currentTarget;
 
@@ -250,57 +150,36 @@ document.getElementById('form').addEventListener('submit', async (e)=>{
     descriptionMarkdown: f.descriptionMarkdown.value?.trim(),
     category: f.category.value?.trim(),
     isPublic: f.isPublic.checked,
-    tags,
-
-    customString1State: stateOrNum(f.customString1State),
-    customString1Name : valOrNull(f.customString1Name),
-    customString2State: stateOrNum(f.customString2State),
-    customString2Name : valOrNull(f.customString2Name),
-    customString3State: stateOrNum(f.customString3State),
-    customString3Name : valOrNull(f.customString3Name),
-
-    customInt1State: stateOrNum(f.customInt1State),
-    customInt1Name : valOrNull(f.customInt1Name),
-    customInt2State: stateOrNum(f.customInt2State),
-    customInt2Name : valOrNull(f.customInt2Name),
-    customInt3State: stateOrNum(f.customInt3State),
-    customInt3Name : valOrNull(f.customInt3Name),
-
-    customBool1State: stateOrNum(f.customBool1State),
-    customBool1Name : valOrNull(f.customBool1Name),
-    customBool2State: stateOrNum(f.customBool2State),
-    customBool2Name : valOrNull(f.customBool2Name),
-    customBool3State: stateOrNum(f.customBool3State),
-    customBool3Name : valOrNull(f.customBool3Name),
-
-    customText1State: stateOrNum(f.customText1State),
-    customText1Name : valOrNull(f.customText1Name),
-    customText2State: stateOrNum(f.customText2State),
-    customText2Name : valOrNull(f.customText2Name),
-    customText3State: stateOrNum(f.customText3State),
-    customText3Name : valOrNull(f.customText3Name),
-
-    customLink1State: stateOrNum(f.customLink1State),
-    customLink1Name : valOrNull(f.customLink1Name),
-    customLink2State: stateOrNum(f.customLink2State),
-    customLink2Name : valOrNull(f.customLink2Name),
-    customLink3State: stateOrNum(f.customLink3State),
-    customLink3Name : valOrNull(f.customLink3Name)
+    tags
   };
 
+  const kinds = ["String", "Int", "Bool", "Text", "Link"];
+  const perKind = 3;
+
+  for (const kind of kinds) {
+    for (let i = 1; i <= perKind; i++) {
+      const base = `custom${kind}${i}`;
+      const stateName = base + "State";
+      const nameName  = base + "Name";
+
+      body[stateName] = stateOrNum(f[stateName]);
+      body[nameName]  = valOrNull(f[nameName]);
+    }
+  }
+
   const r = await fetch('/api/inventories', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    credentials:'same-origin',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
     body: JSON.stringify(body)
   });
 
-  if(r.status === 201){
+  if (r.status === 201) {
     const created = await r.json();
-    location.href = '/Inventories/Details/'+created.id;
-  }else if(r.status === 401){
+    location.href = '/Inventories/Details/' + created.id;
+  } else if (r.status === 401) {
     alert('Unauthorized');
-  }else{
+  } else {
     alert('@L["ErrorLoadingData"]');
   }
 });
