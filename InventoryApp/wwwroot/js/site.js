@@ -30,7 +30,7 @@ function getQueryParam(name) {
 
 (function () {
   const html = document.documentElement;
-  const key = 'theme'; // 'light' | 'dark'
+  const key = 'theme'; 
   function setTheme(th) {
     html.setAttribute('data-bs-theme', th);
     try { localStorage.setItem(key, th); } catch {}

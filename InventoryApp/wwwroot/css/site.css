@@ -17,13 +17,11 @@ html {
   min-height: 100%;
 }
 
-/* Пример: фон страницы и цвета текста автоматически подхватывают тему */
 body {
   background-color: var(--bs-body-bg);
   color: var(--bs-body-color);
 }
 
-/* Карточки, таблицы, ссылки и т.п. — так же на переменных */
 .table thead th {
   color: var(--bs-emphasis-color);
   background-color: var(--bs-tertiary-bg);

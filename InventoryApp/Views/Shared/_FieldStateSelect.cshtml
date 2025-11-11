@@ -1,0 +1,9 @@
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<InventoryApp.Infrastructure.SharedResource> L
+@model string  
+
+<select class="form-select" name="@Model">
+  <option value="0">@L["Off"]</option>
+  <option value="1">@L["Optional"]</option>
+  <option value="2">@L["Required"]</option>
+</select>
