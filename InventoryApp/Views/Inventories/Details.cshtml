@@ -48,6 +48,8 @@
 <script>
 (async function(){
   const id = @Model;
+  const btnDelete = document.getElementById('btnDelete'); 
+
   const esc = s => (s??"").replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
 
   async function loadTags(){

@@ -19,6 +19,7 @@ public class PostsController : ControllerBase
     public PostsController(ApplicationDbContext db, IHubContext<DiscussionHub> hub)
     { _db = db; _hub = hub; }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> List(
         int inventoryId,
@@ -38,7 +39,7 @@ public class PostsController : ControllerBase
         return Ok(new { total, page, pageSize, items });
     }
 
-
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> Add(int inventoryId, [FromBody] string bodyMarkdown, CancellationToken ct)
     {
