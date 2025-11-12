@@ -2,7 +2,7 @@ namespace InventoryApp.Enums;
 
 public enum CustomFieldState
 {
-    NotPresent = 0,
+    Off = 0,
     Optional = 1,
     Required = 2
 }
